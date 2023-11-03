@@ -25,11 +25,42 @@ header {
     width: 20%;
 }
 
-#searchInput {
-    padding: 3px;
-    border-radius: 10px;
+#searchBar {
+    background-color: var(--whiteColor);
+    border-radius: 15px;
     border-style: none;
     color: grey;
+    padding: 1px 3px;
+}
+
+#searchInput {
+    color: rgb(93, 93, 93);
+    background-color: transparent;
+    border-style: none;
+    margin-left: 8px;
+    margin-bottom: 4px;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-style: none;
+    border-color: none;
+    background-color: transparent;
+}
+
+#searchBtn {
+    all: unset;
+    height: 22.5px;
+    width: 20px;
+    margin-top: 3px;
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+#searchBtn svg {
+   fill: grey;
+   border-style: none;
+   border-color: none;
 }
 
 /* BODY STYLING */
@@ -41,28 +72,29 @@ content {
     justify-content: center;
 }
 
-#prevSearchContainer {
+.prevSearch {
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin: 1%;
 }
 
-.prevSearch {
-    background-color: #8bafc2;
-    border-style: solid;
-    border-color: var(--darkBlue);
+.prevSearch button {
+    background-color: var(--darkBlue);
+    font-size: 15px;
+    border-style: none;
     border-radius: 20px;
     padding: 0.5%;
-    color: var(--whiteColor)
+    color: var(--whiteColor);
+    margin: 0% 1%;
+    cursor: pointer;
 }
 
 .mainWeatherContainer {
-    border-color: solid blue;
-    border-style: solid;
-    margin: 8% 25% 2% 25%;
+    margin: 4% 20% 2% 20%;
     display: flex;
     flex-direction: row;
+    height: 550px;
 }
 
 .mainWeatherContainer p {
@@ -71,27 +103,40 @@ content {
 }
 
 .selectedWeatherContainer {
-    width: 70%;
+    width: 62%;
+    background-color: var(--darkBlue);
+    margin-right: 3%;
+    border-radius: 30px;
 }
 
 .selectedWeatherContainer p {
-    background-color: var(--goldYellow);
     z-index: 1;
 }
 
 .futureWeatherContainer {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.futureWeatherCard {
     background-color: var(--darkBlue);
-    width: 30%;
+    border-radius: 20px;
+    height: 18%;
+    padding: 1%;
 }
 
 .futureWeatherContainer p {
     text-align: center;
+    padding: 0px;
 }
 
 .highLowContainer {
-    border-style: solid;
-    border-color: red;
-    margin: 0% 25%;
+    border-radius: 20px;
+    background-color: var(--darkBlue);
+    height: 100px;
+    margin: 0% 20%;
     display: flex;
     justify-content: center;
 }
