@@ -158,12 +158,13 @@ content {
     box-shadow: var(--boxShadow);
 }
 
-.futureWeatherContainer p {
+.futureWeatherCard p {
     text-align: center;
     padding: 0px;
     color: var(--whiteColor);
     display: flex;
     align-items: center;
+
 }
 
 .temp {
@@ -179,11 +180,12 @@ content {
 .highLowContainer {
     border-radius: 20px;
     background-color: var(--darkBlue);
-    height: 100px;
+    height: 120px;
     margin: 0% 20%;
     display: flex;
     justify-content: center;
     box-shadow: var(--boxShadow);
+    padding: 1%;
 }
 
 /* FOOTER STYLING */
@@ -197,3 +199,4 @@ footer {
     color: var(--darkBlue);
     padding: 1%;
 }
+
