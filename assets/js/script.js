@@ -19,7 +19,6 @@ var apiKey = "5277a26b2d577a7efc4a79699aeb7499";
 fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
     .then(response => response.json())
     .then(data => {
-    console.log(data);
     get5Day(data);
 });
 
@@ -40,7 +39,6 @@ if(prevSearchList) {
     
         prevSearchItem.addEventListener("click", function(event){
             event.preventDefault();
-            console.log(event.target.value);
     
             var userParam = event.target.value.split(", ");
             var cityName = userParam[0];
@@ -63,7 +61,6 @@ if(prevSearchList) {
 searchBtn.addEventListener("click", function(event){
     event.preventDefault();
     var userParam = userInput.value.split(", ");
-    console.log(userParam);
     var cityName = userParam[0];
     var stateCode = userParam[1];
     var countryCode = userParam[2] || "";
@@ -81,8 +78,6 @@ function getFetch(cityName, stateCode, countryCode) {
     .then(data => {
         lat = data[0].lat
         lon = data[0].lon
-        console.log(lat)
-        console.log(lon)
         fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
             .then(response => response.json())
             .then(data => {
@@ -188,9 +183,6 @@ function get5Day(data) {
 
     }
 
-    console.log("highs: ", highs)
-    console.log("lows: ", lows)
-    console.log("dates: ", dates)
     getHiLowChart(highs, lows, dates)
 }
 
