@@ -4,6 +4,11 @@ var prevSearchContainer = document.querySelector(".prevSearch")
 var prevSearchList = JSON.parse(localStorage.getItem("previousSearch"));
 var prevSearchBtn = document.querySelectorAll(".prevSearchBtn");
 
+var highs = [];
+var lows = [];
+var dates = [];
+
+
 ///Default Page Load///
 
 //Default City
@@ -29,7 +34,21 @@ for (i=0; i < prevSearchList.length; i++) {
     var prevSearchItem = document.createElement("button");
     prevSearchItem.textContent = prevSearchList[i];
     prevSearchItem.className = "prevSearchBtn";
+    prevSearchItem.value = prevSearchList[i];
     prevSearchContainer.appendChild(prevSearchItem);
+
+    prevSearchItem.addEventListener("click", function(event){
+        event.preventDefault();
+        console.log(event.target.value);
+
+        var userParam = event.target.value.split(", ");
+        var cityName = userParam[0];
+        var stateCode = userParam[1];
+        var countryCode = userParam[2] || "";
+
+        savePrevSearch()
+        getFetch(cityName, stateCode, countryCode);
+    })
 }
 
 ////////////////////////////
@@ -49,29 +68,32 @@ searchBtn.addEventListener("click", function(event){
     
 
     savePrevSearch()
-    // `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&cnt=3&appid=${apiKey}&units=imperial`
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryCode}&appid=${apiKey}`)
-        .then(response => response.json())
-        .then(data => {
-            lat = data[0].lat
-            lon = data[0].lon
-            console.log(lat)
-            console.log(lon)
-            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
-                .then(response => response.json())
-                .then(data => {
-                    get5Day(data);
-                });
-
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
-                .then(response => response.json())
-                .then(data => {
-                    getCurrent(data)
-                })
-        }
-    );
+    getFetch(cityName, stateCode, countryCode);
         
 });
+
+function getFetch(cityName, stateCode, countryCode) {
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryCode}&appid=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+        lat = data[0].lat
+        lon = data[0].lon
+        console.log(lat)
+        console.log(lon)
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
+            .then(response => response.json())
+            .then(data => {
+                get5Day(data);
+            });
+
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`)
+            .then(response => response.json())
+            .then(data => {
+                getCurrent(data)
+            })
+    }
+);
+}
 
 ///////////////////////////////
 
@@ -104,7 +126,21 @@ function savePrevSearch() {
         var prevSearchItem = document.createElement("button");
         prevSearchItem.textContent = prevSearchList[i];
         prevSearchItem.className = "prevSearchBtn";
+        prevSearchItem.value = prevSearchList[i];
         prevSearchContainer.appendChild(prevSearchItem);
+
+        prevSearchItem.addEventListener("click", function(event){
+            event.preventDefault();
+            console.log(event.target.value);
+    
+            var userParam = event.target.value.split(", ");
+            var cityName = userParam[0];
+            var stateCode = userParam[1];
+            var countryCode = userParam[2] || "";
+    
+            savePrevSearch()
+            getFetch(cityName, stateCode, countryCode);
+        })
     }
 }
 
@@ -114,24 +150,45 @@ function savePrevSearch() {
 
 function get5Day(data) {
 
+    highs = []
+    lows = []
+    dates = []
+
     for (i=0; i < data.list.length; i+=8) {
         //Container
         var weatherCard = document.getElementById(`weatherSlot${i}`);
         
         //Image
         var weatherCardImg = weatherCard.children[0];
-        weatherCardImg.setAttribute("src", `https://openweathermap.org/img/wn/${data.list[i].weather[0].icon}@2x.png`);
+        $(weatherCardImg).attr("src", "").fadeOut(0);
+        $(weatherCardImg).attr("src", `https://openweathermap.org/img/wn/${data.list[i].weather[0].icon}@2x.png`).fadeIn(1000);
 
         //Temp
         var weatherCardTemp = weatherCard.children[1];
-        // var temp = data.list[i].main.temp
-        weatherCardTemp.innerHTML = `${Math.ceil(data.list[i].main.temp_max)}&deg; | ${Math.ceil(data.list[i].main.temp_min)}&deg;`
+        $(weatherCardTemp).html("").fadeOut(0);
+        $(weatherCardTemp).html(`${Math.ceil(data.list[i].main.temp_max)}&deg; | ${Math.floor(data.list[i].main.temp_min)}&deg;`).fadeIn(1000);
 
         //Date
         var weatherCardDate = weatherCard.children[2];
-        var cardDate = dayjs(data.list[i].dt_txt).format("ddd")
-        weatherCardDate.innerHTML = `${cardDate}`
+        var cardDate = dayjs(data.list[i].dt_txt).format("ddd");
+       $(weatherCardDate).html("").fadeOut(0);
+       $(weatherCardDate).html(`${cardDate}`).fadeIn(1000);
+
+       var highsRetrieve = (Math.ceil(data.list[i].main.temp_max))
+       highs.push(highsRetrieve)
+
+       var lowsRetrieve = (Math.floor(data.list[i].main.temp_min))
+       lows.push(lowsRetrieve)
+
+       var datesRetrieve = dayjs(data.list[i].dt_txt).format("MM/DD");
+       dates.push(datesRetrieve)
+
     }
+
+    console.log("highs: ", highs)
+    console.log("lows: ", lows)
+    console.log("dates: ", dates)
+    getHiLowChart(highs, lows, dates)
 }
 
 ////////////////////////////////
@@ -139,23 +196,25 @@ function get5Day(data) {
 /// Render Current Weather Data ///
 
 function getCurrent(data) {
-    var currentCard = document.querySelector(".selectedWeatherContainer")
-
     //Image
-    var currentCardImg = document.querySelector(".currentIcon")
-    currentCardImg.setAttribute("src", `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`)
+    var currentCardImg = document.querySelector(".currentIcon");
+    $(currentCardImg).attr("src", "").fadeOut(0);
+    $(currentCardImg).attr("src", `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`).fadeIn(1000);
 
     //City Name
-    var currentCardCity = document.querySelector(".currentCity")
-    currentCardCity.innerHTML = data.name;
+    var currentCardCity = document.querySelector(".currentCity");
+    $(currentCardCity).html("").fadeOut(0);
+    $(currentCardCity).html(data.name).fadeIn(1000);
 
     //Date
-    var currentCardDate = document.querySelector(".currentDate")
-    currentCardDate.innerHTML = `${dayjs(data.dt_txt).format("dddd, MMMM D")}`
+    var currentCardDate = document.querySelector(".currentDate");
+    $(currentCardDate).html("").fadeOut(0);
+    $(currentCardDate).html(`${dayjs(data.dt_txt).format("dddd, MMMM D")}`).fadeIn(1000);
 
     //Temp
-    var currentCardTemp = document.querySelector(".currentTemp")
-    currentCardTemp.innerHTML = `${Math.ceil(data.main.temp)}&deg;`
+    var currentCardTemp = document.querySelector(".currentTemp");
+    $(currentCardTemp).html("").fadeOut(0);
+    $(currentCardTemp).html(`${Math.ceil(data.main.temp)}&deg;`).fadeIn(1000);
 
     // //"Feels like" Temp
     // var currentCardFeels = document.querySelector(".currentFeels")
@@ -170,17 +229,39 @@ function getCurrent(data) {
     // currentCardLow.innerHTML = `Low: ${Math.ceil(data.main.temp_min)}`
 
     //Wind
-    var currentCardWind = document.querySelector(".currentWind")
-    currentCardWind.innerHTML = `Wind | ${Math.ceil(data.wind.speed)} mph`
+    var currentCardWind = document.querySelector(".currentWind");
+    $(currentCardWind).html("").fadeOut(0);
+    $(currentCardWind).html(`Wind | ${Math.ceil(data.wind.speed)} mph`).fadeIn(1000);
 
     //Humidty
-    var currentCardHumid = document.querySelector(".currentHumid")
-    currentCardHumid.innerHTML = `Hum | ${data.main.humidity}%`
+    var currentCardHumid = document.querySelector(".currentHumid");
+    $(currentCardHumid).html("").fadeOut(0);
+    $(currentCardHumid).html(`Hum | ${data.main.humidity}%`).fadeIn(1000);
+}
+
+function getHiLowChart(highs, lows, dates) {
+
+    new Chart("highLowChart", {
+        type: "line",
+        data: {
+            labels: dates,
+            datasets: [{
+                data: highs,
+                borderColor: "#FFECCF",
+                backgroundColor: "#ebeff8",
+                fill: false
+            }, {
+                data: lows,
+                borderColor: "#fff7eb84",
+                backgroundColor: "#ebeff8",
+                fill: false
+            }]
+        },
+        options: {
+            legend: {display: false},
+        }
+    });
+
 }
 
 ////////////////////////////////
-
-//when user selects another day, it populates the main weather container
-
-
-//graph that shows the highs and lows for the upcoming 5 days
