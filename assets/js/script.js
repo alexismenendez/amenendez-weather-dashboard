@@ -30,26 +30,29 @@ fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&app
 })
 
 ///Render Last Searches///
-for (i=0; i < prevSearchList.length; i++) {
-    var prevSearchItem = document.createElement("button");
-    prevSearchItem.textContent = prevSearchList[i];
-    prevSearchItem.className = "prevSearchBtn";
-    prevSearchItem.value = prevSearchList[i];
-    prevSearchContainer.appendChild(prevSearchItem);
-
-    prevSearchItem.addEventListener("click", function(event){
-        event.preventDefault();
-        console.log(event.target.value);
-
-        var userParam = event.target.value.split(", ");
-        var cityName = userParam[0];
-        var stateCode = userParam[1];
-        var countryCode = userParam[2] || "";
-
-        savePrevSearch()
-        getFetch(cityName, stateCode, countryCode);
-    })
+if(prevSearchList) {
+    for (i=0; i < prevSearchList.length; i++) {
+        var prevSearchItem = document.createElement("button");
+        prevSearchItem.textContent = prevSearchList[i];
+        prevSearchItem.className = "prevSearchBtn";
+        prevSearchItem.value = prevSearchList[i];
+        prevSearchContainer.appendChild(prevSearchItem);
+    
+        prevSearchItem.addEventListener("click", function(event){
+            event.preventDefault();
+            console.log(event.target.value);
+    
+            var userParam = event.target.value.split(", ");
+            var cityName = userParam[0];
+            var stateCode = userParam[1];
+            var countryCode = userParam[2] || "";
+    
+            savePrevSearch()
+            getFetch(cityName, stateCode, countryCode);
+        })
+    }
 }
+
 
 ////////////////////////////
 
