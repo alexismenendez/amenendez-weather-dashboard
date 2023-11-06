@@ -73,7 +73,7 @@ searchBtn.addEventListener("click", function(event){
 });
 
 function getFetch(cityName, stateCode, countryCode) {
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryCode}&appid=${apiKey}`)
+    fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName},${stateCode},${countryCode}&appid=${apiKey}`)
     .then(response => response.json())
     .then(data => {
         lat = data[0].lat
